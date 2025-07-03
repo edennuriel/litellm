@@ -461,6 +461,8 @@ def _count_messages(
                     use_default_image_token_count,
                     default_token_count,
                 )
+            elif key == "thinking_blocks":
+                verbose_logger.debug("excluding thinking tokens...")
             else:
                 raise ValueError(
                     f"Unsupported type {type(value)} for key {key} in message {message}"
