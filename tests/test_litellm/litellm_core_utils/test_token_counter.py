@@ -621,3 +621,38 @@ def test_bad_input_token_counter(model, messages):
         messages=messages,
         default_token_count=1000,
     )
+
+def test_token_counter_with_thinking_blocks():
+    """Test token counting with thinking blocks"""
+    from litellm import token_counter
+
+    messages = [
+        {
+            "role": "user",
+            "content": "What is 1 + 1?",
+        },
+        {
+            "role": "assistant",
+            "content": "I'm thinking...",
+        },
+    ]
+    num_tokens = token_counter(model="claude-sonnet-4", messages=messages)
+
+    messages = [
+        {
+            "role": "user",
+            "content": "What is 1 + 1?",
+        },
+        {
+            "role": "assistant",
+            "content": "I'm thinking...",
+            "thinking_blocks": [
+                {"type": "thinking", "thinking": "1 + 1 = 2", "signature": "sig"},
+                {"type": "redacted_thinking", "data": "1 + 1 = 2"},
+            ],
+        },
+    ]
+    num_tokens_thinking = token_counter(model="claude-sonnet-4", messages=messages)
+    print(f"without thinking {num_tokens} with thinking {num_tokens_thinking}")
+    assert num_tokens == num_tokens_thinking
+
